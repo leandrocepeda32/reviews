@@ -21,13 +21,19 @@ type Repository interface {
 	GetAllReviewsByArticle(ctx context.Context, id string) (*[]Review, error)
 }
 
-type reviewService struct {
-	repository Repository
+type ReviewMessageBroker interface {
+	Created(ctx context.Context, review Review)
 }
 
-func NewReviewService(repository Repository) Service {
+type reviewService struct {
+	repository Repository
+	messageBroker ReviewMessageBroker
+}
+
+func NewReviewService(repository Repository, messageBroker ReviewMessageBroker) Service {
 	return &reviewService {
 		repository: repository,
+		messageBroker: messageBroker,
 	}
 }
 
@@ -51,7 +57,15 @@ func (rs *reviewService) CreateReview(ctx context.Context, createReview *vo.Crea
 		UserId: userId,
 	}
 
-	return rs.repository.Save(ctx, &review)
+	err = rs.repository.Save(ctx, &review)
+
+	if err != nil {
+		return err
+	}
+
+	rs.messageBroker.Created(ctx, review)
+
+	return nil
 }
 
 func (rs *reviewService) GetArticleReviews(ctx context.Context, id string) (*[]Review, error) {
