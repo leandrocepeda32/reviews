@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -42,4 +44,41 @@ func (r *RestClient) GetArticle(id string) error {
 	}
 
 	return nil
+}
+
+type User struct {
+	ID          string   `json:"id"`
+	Name        string   `json:"name"`
+	Permissions []string `json:"permissions"`
+	Login       string   `json:"login"`
+}
+
+func (r *RestClient) GetUser(ctx context.Context) (User, error) {
+
+	user := User{}
+	token := ctx.Value("user_logged")
+	requestUrl := "http://localhost:3000/v1/users/current"
+	req, err := http.NewRequest("GET", requestUrl, nil)
+
+	if err != nil {
+		return user,err
+	}
+
+	req.Header.Set("Authorization", fmt.Sprintf("%v", token))
+
+	res, err := r.HTTPClient.Do(req)
+
+	if err != nil {
+		return user, errors.NewRestError("rest_client_error", http.StatusServiceUnavailable)
+	}
+
+	defer res.Body.Close()
+
+	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusBadRequest {
+		return user,errors.NewRestError("rest_client_error", res.StatusCode)
+	}
+
+	json.NewDecoder(res.Body).Decode(&user)
+
+	return user, nil
 }

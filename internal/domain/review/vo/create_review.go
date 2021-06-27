@@ -1,6 +1,7 @@
 package vo
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/leandrocepeda32/reviews/internal/domain"
@@ -9,7 +10,7 @@ import (
 
 type CreateReview struct {
 	Comment string `json:"comment"`
-	Score int64 `json:"score"`
+	Score int `json:"score"`
 	ArticleId string `json:"article_id"`
 }
 
@@ -20,15 +21,15 @@ func (cr *CreateReview) Validate() error {
 	err := restClient.GetArticle(cr.ArticleId)
 
 	if err != nil {
-		return errors.NewBusinessError("invalid article")
+		return errors.NewBusinessError(fmt.Sprintf("The article with id %s doesn't exist", cr.ArticleId))
 	}
 	
 	if len(cr.Comment) < 10 {
-		return errors.NewBusinessError("invalid comment")
+		return errors.NewBusinessError("Comment must have at least 10 characters")
 	}
 
 	if(cr.Score < 1 || cr.Score > 5) {
-		return errors.NewBusinessError("invalid score")
+		return errors.NewBusinessError("Score must be between 1 and 5")
 	}
 
 	return nil

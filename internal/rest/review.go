@@ -14,6 +14,7 @@ import (
 type Service interface {
 	CreateReview(ctx context.Context, createReview *vo.CreateReview) error
 	GetArticleReviews(ctx context.Context, id string) (*[]review.Review, error)
+	GetArticleRating(ctx context.Context, id string) (*vo.ReviewsRating, error)
 }
 
 type ReviewHandler struct {
@@ -34,8 +35,8 @@ func (rh *ReviewHandler) createReview(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(createReview)
 
 	if err != nil {
-		ErrorResponse(w, 400, err.Error())
-		return 
+		ErrorResponse(w, 400, "Can't unmarshal JSON object into struct")
+		return
 	}
 
 	err = rh.service.CreateReview(ctx, createReview)
@@ -72,4 +73,26 @@ func (rh *ReviewHandler) GetArticleReviews(w http.ResponseWriter, r *http.Reques
 	}
 
 	WebResponse(w, 200, reviews)
+}
+
+func (rh *ReviewHandler) GetArticleRating(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+
+	if id == "" {
+		ErrorResponse(w, 400, "id is required")
+		return
+	}
+	ctx := r.Context()
+
+	articleRating, err := rh.service.GetArticleRating(ctx, id)
+
+	if err != nil {
+		if err == errors.NotFound {
+			ErrorResponse(w, 404, "not_found")
+		}
+		ErrorResponse(w, 503, err.Error())
+	}
+
+
+	WebResponse(w, 200, articleRating)
 }

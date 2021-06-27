@@ -2,9 +2,11 @@ package rest
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
-	"os"
 	"strings"
+
+	"github.com/leandrocepeda32/reviews/internal/utils"
 )
 
 // User es el usuario logueado
@@ -23,7 +25,6 @@ func securityMiddleware(next http.Handler) http.Handler {
 			return
 		}
 		token := tokenString[7:]
-		if os.Getenv("SKIP_AUTH") != "true" {
 			req, err := http.NewRequest("GET", "http://localhost:3000/v1/users/current", nil)
 			if err != nil || req == nil {
 				ErrorResponse(w, 500, "internal_server_error")
@@ -35,8 +36,17 @@ func securityMiddleware(next http.Handler) http.Handler {
 				ErrorResponse(w, 401, "Unauthorized")
 				return
 			}
-		}
-		ctx := context.WithValue(r.Context(), "user_logged", tokenString)
+		
+
+		user := User{}
+		json.NewDecoder(resp.Body).Decode(&user)
+
+		userValues := utils.ContextValues{map[string]string{
+			"user_id": user.ID,
+			"user_logged": tokenString,
+		}}
+
+		ctx := context.WithValue(r.Context(), "user", userValues)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

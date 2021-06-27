@@ -25,7 +25,7 @@ func (r *repositoryMongo) Save(ctx context.Context, review *Review) error {
 	return nil
 }
 
-func (r *repositoryMongo) getAllReviewsByArticle(ctx context.Context, id string) (*[]Review, error) {
+func (r *repositoryMongo) GetAllReviewsByArticle(ctx context.Context, id string) (*[]Review, error) {
 	filter := bson.M{"articleid" : id}
 	cursor, err := r.Collection.Find(ctx, filter)
 	if err != nil {

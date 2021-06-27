@@ -9,7 +9,7 @@ import (
 type Review struct {
 	Id uuid.UUID `json:"id"`
 	Comment string `json:"comment"`
-	Score int64 `json:"score"`
+	Score int `json:"score"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	ArticleId string `json:"article_id"`
