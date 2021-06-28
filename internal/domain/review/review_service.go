@@ -7,18 +7,20 @@ import (
 	"github.com/leandrocepeda32/reviews/internal/domain/review/vo"
 	"github.com/leandrocepeda32/reviews/internal/utils"
 	"github.com/leandrocepeda32/reviews/internal/utils/errors"
-	uuid "github.com/satori/go.uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Service interface {
 	CreateReview(ctx context.Context, createReview *vo.CreateReview) error
 	GetArticleReviews(ctx context.Context, id string) (*[]Review, error)
 	GetArticleRating(ctx context.Context, id string) (*vo.ReviewsRating, error)
+	DeleteReview(ctx context.Context, id string) error
 }
 
 type Repository interface {
 	Save(ctx context.Context, review *Review) error
 	GetAllReviewsByArticle(ctx context.Context, id string) (*[]Review, error)
+	Delete(ctx context.Context, id string) error
 }
 
 type ReviewMessageBroker interface {
@@ -48,7 +50,7 @@ func (rs *reviewService) CreateReview(ctx context.Context, createReview *vo.Crea
 	userId := ctx.Value("user").(utils.ContextValues).Get("user_id")
 	
 	review := Review{
-		Id: uuid.NewV4(),
+		ID: primitive.NewObjectID(),
 		Comment: createReview.Comment,
 		Score: createReview.Score,
 		CreatedAt: time.Now(),
@@ -95,10 +97,6 @@ func(rs *reviewService) GetArticleRating(ctx context.Context, id string) (*vo.Re
 		return nil, err
 	}
 
-	if len(*reviews) == 0 {
-		return nil, errors.NotFound
-	}
-
 	var scoreSum int = 0;
 
 	for _, review := range(*reviews) {
@@ -113,4 +111,8 @@ func(rs *reviewService) GetArticleRating(ctx context.Context, id string) (*vo.Re
 	}
 
 	return &reviewsRating, nil
+}
+
+func(rs *reviewService) DeleteReview(ctx context.Context, id string) error {
+	return rs.repository.Delete(ctx, id)
 }

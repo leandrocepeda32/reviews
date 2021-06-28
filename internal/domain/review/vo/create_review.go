@@ -9,9 +9,9 @@ import (
 )
 
 type CreateReview struct {
+	ArticleId string `json:"article_id"`
 	Comment string `json:"comment"`
 	Score int `json:"score"`
-	ArticleId string `json:"article_id"`
 }
 
 func (cr *CreateReview) Validate() error {

@@ -15,6 +15,7 @@ type Service interface {
 	CreateReview(ctx context.Context, createReview *vo.CreateReview) error
 	GetArticleReviews(ctx context.Context, id string) (*[]review.Review, error)
 	GetArticleRating(ctx context.Context, id string) (*vo.ReviewsRating, error)
+	DeleteReview(ctx context.Context, id string) error
 }
 
 type ReviewHandler struct {
@@ -26,7 +27,6 @@ func NewReviewHandler(service Service) *ReviewHandler {
 		service: service,
 	}
 }
-
 
 
 func (rh *ReviewHandler) createReview(w http.ResponseWriter, r *http.Request) {
@@ -62,13 +62,10 @@ func (rh *ReviewHandler) GetArticleReviews(w http.ResponseWriter, r *http.Reques
 
 	if err != nil {
 		if err == errors.NotFound {
-			ErrorResponse(w, 404, "not_found")
+			ErrorResponse(w, 404, "The article has no reviews")
+			return
 		}
 		ErrorResponse(w, 503, err.Error())
-	}
-
-	if len(*reviews) == 0 {
-		ErrorResponse(w, 404, "The article has not reviews")
 		return
 	}
 
@@ -79,7 +76,7 @@ func (rh *ReviewHandler) GetArticleRating(w http.ResponseWriter, r *http.Request
 	id := chi.URLParam(r, "id")
 
 	if id == "" {
-		ErrorResponse(w, 400, "id is required")
+		ErrorResponse(w, 400, "Id is required")
 		return
 	}
 	ctx := r.Context()
@@ -88,11 +85,34 @@ func (rh *ReviewHandler) GetArticleRating(w http.ResponseWriter, r *http.Request
 
 	if err != nil {
 		if err == errors.NotFound {
-			ErrorResponse(w, 404, "not_found")
+			ErrorResponse(w, 404, "The article has no reviews")
+			return
 		}
 		ErrorResponse(w, 503, err.Error())
+		return
 	}
 
 
 	WebResponse(w, 200, articleRating)
+}
+
+
+
+func (rh *ReviewHandler) DeleteReview(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+
+	if id == "" {
+		ErrorResponse(w, 400, "Id is required")
+		return
+	}
+	ctx := r.Context()
+
+	err := rh.service.DeleteReview(ctx, id)
+
+	if err != nil {
+		ErrorResponse(w, 400, err.Error())
+		return
+	}
+
+	w.WriteHeader(200)
 }

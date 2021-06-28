@@ -2,9 +2,12 @@ package review
 
 import (
 	"context"
+	"fmt"
 	"log"
 
+	"github.com/leandrocepeda32/reviews/internal/utils/errors"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -29,14 +32,41 @@ func (r *repositoryMongo) GetAllReviewsByArticle(ctx context.Context, id string)
 	filter := bson.M{"articleid" : id}
 	cursor, err := r.Collection.Find(ctx, filter)
 	if err != nil {
+		log.Print(err)
 		return nil, err
 	}
 	
 	var reviews []Review
 	if err = cursor.All(ctx, &reviews); err != nil {
-		log.Fatal(err)
+		return nil, err
+	}
+
+	if(len(reviews) == 0) {
+		return nil, errors.NotFound
 	}
 
 	return &reviews, nil
 
+}
+
+func (r *repositoryMongo) Delete(ctx context.Context, id string) error {
+	idPrimitive, err := primitive.ObjectIDFromHex(id)
+	
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id" : idPrimitive}
+
+	deleteResult, err := r.Collection.DeleteOne(ctx, filter)
+
+	if err != nil {
+		return err
+	}
+
+	if deleteResult.DeletedCount == 0 {
+		return errors.NewBusinessError(fmt.Sprintf("The id %s doesn't exist", id))
+	}
+
+	return nil
 }

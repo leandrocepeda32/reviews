@@ -3,11 +3,11 @@ package review
 import (
 	"time"
 
-	uuid "github.com/satori/go.uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Review struct {
-	Id uuid.UUID `json:"id"`
+	ID        primitive.ObjectID `bson:"_id" json:"id"`
 	Comment string `json:"comment"`
 	Score int `json:"score"`
 	CreatedAt time.Time `json:"created_at"`
