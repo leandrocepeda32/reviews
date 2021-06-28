@@ -17,7 +17,7 @@ type User struct {
 	Login       string   `json:"login"  validate:"required"`
 }
 
-func securityMiddleware(next http.Handler) http.Handler {
+func authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenString := r.Header.Get("Authorization")
 		if strings.Index(tokenString, "Bearer ") != 0 {

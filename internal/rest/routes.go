@@ -5,7 +5,7 @@ import (
 )
 
 func RegisterReviewsRoutes(r chi.Router, handler *ReviewHandler) {
-	r.Use(securityMiddleware)
+	r.Use(authMiddleware)
 	r.Route("/reviews", func(r chi.Router) {
 		r.Post("/", handler.createReview)
 		r.Delete("/{id}", handler.DeleteReview)
