@@ -1,10 +1,6 @@
 package vo
 
 import (
-	"fmt"
-	"time"
-
-	"github.com/leandrocepeda32/reviews/internal/domain"
 	"github.com/leandrocepeda32/reviews/internal/utils/errors"
 )
 
@@ -15,14 +11,6 @@ type CreateReview struct {
 }
 
 func (cr *CreateReview) Validate() error {
-
-	restClient := domain.NewRestClient(5 * time.Second)
-
-	err := restClient.GetArticle(cr.ArticleId)
-
-	if err != nil {
-		return errors.NewBusinessError(fmt.Sprintf("The article with id %s doesn't exist", cr.ArticleId))
-	}
 	
 	if len(cr.Comment) < 10 {
 		return errors.NewBusinessError("Comment must have at least 10 characters")

@@ -3,7 +3,9 @@ package rest
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/leandrocepeda32/reviews/internal/domain/review"
@@ -36,6 +38,14 @@ func (rh *ReviewHandler) createReview(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		ErrorResponse(w, 400, "Can't unmarshal JSON object into struct")
+		return
+	}
+
+	restClient := NewRestClient(5 * time.Second)
+	err = restClient.GetArticle(createReview.ArticleId)
+
+	if err != nil {
+		ErrorResponse(w, 400, fmt.Sprintf("The article with id %s doesn't exist", createReview.ArticleId))
 		return
 	}
 

@@ -53,7 +53,7 @@ func (r *repositoryMongo) Delete(ctx context.Context, id string) error {
 	idPrimitive, err := primitive.ObjectIDFromHex(id)
 	
 	if err != nil {
-		return err
+		return errors.NewBusinessError("Invalid Id")
 	}
 
 	filter := bson.M{"_id" : idPrimitive}
