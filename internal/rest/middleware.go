@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
-
-	"github.com/leandrocepeda32/reviews/internal/utils"
 )
 
 // User es el usuario logueado
@@ -41,12 +39,9 @@ func authMiddleware(next http.Handler) http.Handler {
 		user := User{}
 		json.NewDecoder(resp.Body).Decode(&user)
 
-		userValues := utils.ContextValues{map[string]string{
-			"user_id": user.ID,
-			"user_logged": tokenString,
-		}}
+		ctx := context.WithValue(r.Context(), "user_logged", tokenString)
+		ctx2 := context.WithValue(ctx, "user_id", user.ID)
 
-		ctx := context.WithValue(r.Context(), "user", userValues)
-		next.ServeHTTP(w, r.WithContext(ctx))
+		next.ServeHTTP(w, r.WithContext(ctx2))
 	})
 }

@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/leandrocepeda32/reviews/internal/domain/review/vo"
-	"github.com/leandrocepeda32/reviews/internal/utils"
 	"github.com/leandrocepeda32/reviews/internal/utils/errors"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -47,7 +46,7 @@ func (rs *reviewService) CreateReview(ctx context.Context, createReview *vo.Crea
 		return err
 	}
 
-	userId := ctx.Value("user").(utils.ContextValues).Get("user_id")
+	userId := ctx.Value("user_id").(string)
 	
 	review := Review{
 		ID: primitive.NewObjectID(),

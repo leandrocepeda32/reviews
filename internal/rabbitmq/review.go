@@ -45,10 +45,6 @@ func (t *Review) publish(ctx context.Context, e interface{}) {
 
 	failOnError(err, "Failed to declare a queue")
 
-	if err != nil {
-		panic("bad message")
-	}
-
 	err = t.ch.Publish(
 		"",    // exchange
 		q.Name, // routing key
