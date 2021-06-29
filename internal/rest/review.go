@@ -66,6 +66,15 @@ func (rh *ReviewHandler) GetArticleReviews(w http.ResponseWriter, r *http.Reques
 		ErrorResponse(w, 400, "id is required")
 		return
 	}
+
+	restClient := NewRestClient(5 * time.Second)
+	err := restClient.GetArticle(id)
+
+	if err != nil {
+		ErrorResponse(w, 400, fmt.Sprintf("The article with id %s doesn't exist", id))
+		return
+	}
+
 	ctx := r.Context()
 
 	reviews, err := rh.service.GetArticleReviews(ctx, id)
@@ -89,6 +98,15 @@ func (rh *ReviewHandler) GetArticleRating(w http.ResponseWriter, r *http.Request
 		ErrorResponse(w, 400, "Id is required")
 		return
 	}
+
+	restClient := NewRestClient(5 * time.Second)
+	err := restClient.GetArticle(id)
+
+	if err != nil {
+		ErrorResponse(w, 400, fmt.Sprintf("The article with id %s doesn't exist", id))
+		return
+	}
+
 	ctx := r.Context()
 
 	articleRating, err := rh.service.GetArticleRating(ctx, id)
