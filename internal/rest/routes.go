@@ -9,7 +9,9 @@ func RegisterReviewsRoutes(r chi.Router, handler *ReviewHandler) {
 	r.Route("/reviews", func(r chi.Router) {
 		r.Post("/", handler.createReview)
 		r.Delete("/{id}", handler.DeleteReview)
-		r.Get("/article/{id}", handler.GetArticleReviews)
-		r.Get("/article/rating/{id}", handler.GetArticleRating)
+	})
+	r.Route("/articles", func(r chi.Router) {
+		r.Get("/{id}/reviews", handler.GetArticleReviews)
+		r.Get("/{id}/rating", handler.GetArticleRating)
 	})
 }
