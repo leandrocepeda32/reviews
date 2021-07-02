@@ -1,0 +1,170 @@
+basePath: /
+definitions:
+  errors.ErrCustom:
+    properties:
+      error:
+        type: string
+    type: object
+  review.Review:
+    properties:
+      article_id:
+        type: string
+      comment:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      score:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  vo.CreateReview:
+    properties:
+      article_id:
+        type: string
+      comment:
+        type: string
+      score:
+        type: integer
+    type: object
+  vo.ReviewsRating:
+    properties:
+      article_id:
+        type: string
+      rating:
+        type: number
+    type: object
+info:
+  contact: {}
+  description: Microservice to add reviews to articles
+  title: Reviews Microservice
+  version: "1.0"
+paths:
+  /articles/{id}/rating:
+    get:
+      consumes:
+      - application/json
+      description: Get the rating of an article
+      parameters:
+      - description: article id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/vo.ReviewsRating'
+              type: array
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrCustom'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.ErrCustom'
+      summary: Rating for an article
+      tags:
+      - reviews
+  /articles/{id}/reviews:
+    get:
+      consumes:
+      - application/json
+      description: Get the reviews of an article
+      parameters:
+      - description: article id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/review.Review'
+              type: array
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrCustom'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.ErrCustom'
+      summary: List of reviews for an article
+      tags:
+      - reviews
+  /reviews:
+    post:
+      consumes:
+      - application/json
+      description: Add a review for an article
+      parameters:
+      - description: Add review
+        in: body
+        name: review
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateReview'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vo.CreateReview'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrCustom'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.ErrCustom'
+      summary: Add a review
+      tags:
+      - reviews
+  /reviews/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a review by id
+      parameters:
+      - description: review id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrCustom'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.ErrCustom'
+      summary: Delete a review
+      tags:
+      - reviews
+swagger: "2.0"

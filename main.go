@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -17,6 +16,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// @title Reviews Microservice
+// @version 1.0
+// @description Microservice to add reviews to articles
+// @BasePath /
 func main() {
 
 	//RABBIT
@@ -58,16 +61,10 @@ func main() {
 
 	//ROUTES
 	router := chi.NewRouter()
+
+
 	rest.RegisterReviewsRoutes(router, reviewHandler)
-
-	log.Print("Availability routes")
-	for _, a := range router.Routes() {
-		for _, b := range a.SubRoutes.Routes() {
-			log.Print(fmt.Sprint(strings.ReplaceAll(a.Pattern, "/*", ""), b.Pattern))
-		}
-
-	}
-
+	
 	//START
 	port := ":8020"
 	log.Print(fmt.Sprint("Starting server at port", port))

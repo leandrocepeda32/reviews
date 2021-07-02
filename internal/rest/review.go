@@ -30,8 +30,18 @@ func NewReviewHandler(service Service) *ReviewHandler {
 	}
 }
 
-
-func (rh *ReviewHandler) createReview(w http.ResponseWriter, r *http.Request) {
+// CreateReview godoc
+// @Summary Add a review
+// @Description Add a review for an article
+// @Tags reviews
+// @Accept  json
+// @Produce  json
+// @Param review body vo.CreateReview true "Add review"
+// @Success 200 {object} vo.CreateReview
+// @Failure 400 {object} errors.ErrCustom
+// @Failure 404 {object} errors.ErrCustom
+// @Router /reviews [post]
+func (rh *ReviewHandler) CreateReview(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	createReview := &vo.CreateReview{}
 	err := json.NewDecoder(r.Body).Decode(createReview)
@@ -59,6 +69,17 @@ func (rh *ReviewHandler) createReview(w http.ResponseWriter, r *http.Request) {
 	WebResponse(w, 201, createReview)
 }
 
+// GetArticleReviews godoc
+// @Summary List of reviews for an article
+// @Description Get the reviews of an article
+// @Tags reviews
+// @Accept  json
+// @Produce  json
+// @Param id path string true "article id"
+// @Success 200 {array} []review.Review
+// @Failure 400 {object} errors.ErrCustom
+// @Failure 404 {object} errors.ErrCustom
+// @Router /articles/{id}/reviews [get]
 func (rh *ReviewHandler) GetArticleReviews(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
@@ -91,6 +112,17 @@ func (rh *ReviewHandler) GetArticleReviews(w http.ResponseWriter, r *http.Reques
 	WebResponse(w, 200, reviews)
 }
 
+// GetArticleRating godoc
+// @Summary Rating for an article
+// @Description Get the rating of an article
+// @Tags reviews
+// @Accept  json
+// @Produce  json
+// @Param id path string true "article id"
+// @Success 200 {array} []vo.ReviewsRating
+// @Failure 400 {object} errors.ErrCustom
+// @Failure 404 {object} errors.ErrCustom
+// @Router /articles/{id}/rating [get]
 func (rh *ReviewHandler) GetArticleRating(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
@@ -125,7 +157,17 @@ func (rh *ReviewHandler) GetArticleRating(w http.ResponseWriter, r *http.Request
 }
 
 
-
+// DeleteReview godoc
+// @Summary Delete a review
+// @Description Delete a review by id
+// @Tags reviews
+// @Accept  json
+// @Produce  json
+// @Param  id path string true "review id"
+// @Success 200
+// @Failure 400 {object} errors.ErrCustom
+// @Failure 404 {object} errors.ErrCustom
+// @Router /reviews/{id} [delete]
 func (rh *ReviewHandler) DeleteReview(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
