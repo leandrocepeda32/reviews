@@ -4,8 +4,6 @@ Microservicio que permite agregar reseñas a articulos del [ecommerce](https://g
 
 Se comunica con los microservicios de [Auth](https://github.com/nmarsollier/ecommerce_auth_node) y [Catalog](https://github.com/nmarsollier/ecommerce_catalog_java)
 
-El diseño del sistema se lleva a cabo aplicando la arquitectura de Domain Driven Desing.
-
 ## Casos de Uso:
 
 - Agregar reseña.
